@@ -168,7 +168,7 @@ export default function AllwedVoters() {
                   </svg>
                   <p className="font-semibold">{voter[1]}</p>
                   <p className="text-sm text-gray-600">{voter[2] ? voter[2].slice(0, 20) : 'N/A'}</p>
-                  <p className="text-sm">Voter id:{voter[0].toNumber() || 'No position'}</p>
+                  <p className="text-sm">Voter id:{Number(voter[0]) || 'No position'}</p>
                 </motion.div>
               ))
             ) : (

@@ -39,7 +39,7 @@ export default function Navbar() {
       id: 4,
       title: 'Local',
       dropdown: [
-        { title: 'Get Winner', link: '/winner' },
+        { title: 'Winner', link: '/winner' },
         { title: 'Our Team', link: '/ourteam' },
         { title: 'How it works', link: '/howitsworks' },
       ] 

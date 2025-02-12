@@ -56,7 +56,8 @@ export default function WinningCandidate() {
   const [showConfetti, setShowConfetti] = useState(false);
 
   useEffect(() => {
-    fetchWinner();
+    const currentTimestamp = Math.floor(new Date().getTime() / 1000);
+    fetchWinner(currentTimestamp);
   }, []);
 
   useEffect(() => {

@@ -1,4 +1,4 @@
-// TypewriterText.jsx
+// Typingtext.jsx
 import React, { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { TextPlugin } from "gsap/TextPlugin";
@@ -15,13 +15,13 @@ const Typingtext = () => {
         "#welcome-title",
         { text: "" },
         {
-          text: "Welcome to Bloackchain based Decentralized Voting",
+          text: "Welcome to Blockchain based Decentralized Voting",
           duration: 4,
           delay: 3,
           ease: "power2",
-          repeat: -1, // Loop indefinitely
-          repeatDelay: 2, // Delay between loops
-          yoyo: true // Animates back to the starting text (empty) before repeating
+          repeat: -1,
+          repeatDelay: 2,
+          yoyo: true
         }
       );
 
@@ -30,7 +30,7 @@ const Typingtext = () => {
         "#welcome-subtitle",
         { text: "" },
         {
-          
+          text: "Secure, Transparent, and Efficient",
           duration: 4,
           delay: 3,
           ease: "power2",
@@ -45,9 +45,17 @@ const Typingtext = () => {
   }, []);
 
   return (
-    <div className="flex flex-col justify-center text-black font-jetbrains font-bold tracking-tight mx-0 p-6 w-1/2" ref={comp}>
-      <h1 className="text-6xl font-jetbrains" id="welcome-title"></h1>
-      <h3 className="text-2xl mt-4 font-jetbrains" id="welcome-subtitle"></h3>
+    <div className="flex items-center justify-center w-full h-full p-4 md:p-8 lg:p-12" ref={comp}>
+      <div className="max-w-2xl">
+        <h1
+          className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold font-jetbrains text-black tracking-tight mb-4 break-words hyphens-auto"
+          id="welcome-title"
+        ></h1>
+        <h3
+          className="text-xl sm:text-2xl md:text-3xl font-semibold font-jetbrains text-gray-700 mt-2 sm:mt-4 break-words hyphens-auto"
+          id="welcome-subtitle"
+        ></h3>
+      </div>
     </div>
   );
 };

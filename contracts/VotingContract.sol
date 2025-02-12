@@ -3,22 +3,25 @@ pragma solidity ^0.8.0;
 
 import "hardhat/console.sol";
 import "@openzeppelin/contracts/utils/Counters.sol"; //handling incrementing and decrementing of values
+import "@openzeppelin/contracts/utils/Strings.sol";
 
-contract VotingContract 
-{
+contract VotingContract {
     using Counters for Counters.Counter;
 
-    address public votingOrganizer;         //this is the Election Commision
-    uint256 startTime;                      //time when election starts
-    uint256 endTime;                        //time when election ends
-    Counters.Counter private _voterId;      //registerId of the Voter
-    Counters.Counter private _candidateId;  ///registerId of the Candidate
+    address public votingOrganizer; //this is the Election Commision
+    uint256 startTime; //time when election starts
+    uint256 endTime; //time when election ends
+    Counters.Counter private _voterId; //registerId of the Voter
+    Counters.Counter private _candidateId; ///registerId of the Candidate
 
-    enum ApprovalStatus {Pending, Approved, Rejected}
+    enum ApprovalStatus {
+        Pending,
+        Approved,
+        Rejected
+    }
 
     // Candidate
-    struct Candidate 
-    {
+    struct Candidate {
         uint256 candidateId;
         string age;
         string name;
@@ -30,8 +33,7 @@ contract VotingContract
     }
 
     // Event is used to store the data on the blockchain
-    event CandidateCreate
-    (
+    event CandidateCreate(
         uint256 indexed candidateId,
         string age,
         string name,
@@ -45,15 +47,12 @@ contract VotingContract
     mapping(address => Voters) public voters;
 
     address[] public candidateAddress; // Store the address of all candidates
-    address[] public votedVoters;     // voters who voted
+    address[] public votedVoters; // voters who voted
     address[] public votersAddress;
     address[] public approvedCandidates;
     address[] public approvedVoters;
 
-    
-
-    struct Voters 
-    {
+    struct Voters {
         uint256 voter_voterId;
         string voter_name;
         address voter_address;
@@ -66,8 +65,7 @@ contract VotingContract
     }
 
     // Saves voter on the blockchain when emitted
-    event voterCreated
-    (
+    event voterCreated(
         uint256 indexed voter_voterId,
         string voter_name,
         address voter_address,
@@ -77,20 +75,25 @@ contract VotingContract
         ApprovalStatus status
     );
 
-    constructor() 
-    {
+    constructor() {
         votingOrganizer = msg.sender; // Person responsible for managing the election (Election Commission)
+        startTime = 0;
+        endTime = 0;
     }
 
-    modifier onlyOwner()
-    {
-        require(msg.sender == votingOrganizer, "Only owner can call this function");
+    modifier onlyOwner() {
+        require(
+            msg.sender == votingOrganizer,
+            "Only owner can call this function"
+        );
         _;
     }
 
-    modifier onlyDuringVotingPeroid()
-    {
-        require(block.timestamp >= startTime && block.timestamp <= endTime, "Voting is not active");
+    modifier onlyDuringVotingPeroid() {
+        require(
+            block.timestamp >= startTime && block.timestamp <= endTime,
+            "Voting is not active"
+        );
         _;
     }
 
@@ -101,7 +104,10 @@ contract VotingContract
         string memory _name,
         string memory _ipfs
     ) public {
-        require(keccak256(bytes(_age)) != keccak256(bytes("21")), "You are not eligible to be a candidate");
+        require(
+            keccak256(bytes(_age)) != keccak256(bytes("21")),
+            "You are not eligible to be a candidate"
+        );
 
         _candidateId.increment(); // Increment count as each candidate is added
         uint256 IdNumber = _candidateId.current();
@@ -114,12 +120,20 @@ contract VotingContract
         candidate._address = _address;
         candidate.ipfs = _ipfs;
         candidate.status = ApprovalStatus.Pending;
-        candidate.message = '';
+        candidate.message = "";
 
         // Store address in the array of all candidates
         candidateAddress.push(_address);
 
-        emit CandidateCreate(IdNumber, _age, _name, candidate.voteCount, _address, candidate.message, candidate.status);
+        emit CandidateCreate(
+            IdNumber,
+            _age,
+            _name,
+            candidate.voteCount,
+            _address,
+            candidate.message,
+            candidate.status
+        );
     }
 
     // Function to get all the candidates
@@ -133,7 +147,12 @@ contract VotingContract
     }
 
     // Function to get the details of the particular candidate
-    function getCandidateData(address _address) public view returns (
+    function getCandidateData(
+        address _address
+    )
+        public
+        view
+        returns (
             string memory,
             string memory,
             uint256,
@@ -155,10 +174,15 @@ contract VotingContract
     }
 
     // Approve a candidate with a message
-    function approveCandidate(address _candidateAddress, string memory _message) public onlyOwner
-    {
+    function approveCandidate(
+        address _candidateAddress,
+        string memory _message
+    ) public onlyOwner {
         Candidate storage candidate = candidates[_candidateAddress];
-        require(candidate.status == ApprovalStatus.Pending, "Candidate status must be pending");
+        require(
+            candidate.status == ApprovalStatus.Pending,
+            "Candidate status must be pending"
+        );
 
         candidate.status = ApprovalStatus.Approved;
         candidate.message = _message;
@@ -166,24 +190,31 @@ contract VotingContract
     }
 
     // Reject a candidate with a message
-    function rejectCandidate(address _candidateAddress, string memory _message) public onlyOwner
-    {
+    function rejectCandidate(
+        address _candidateAddress,
+        string memory _message
+    ) public onlyOwner {
         Candidate storage candidate = candidates[_candidateAddress];
-        require(candidate.status == ApprovalStatus.Pending, "Candidate status must be pending");
+        require(
+            candidate.status == ApprovalStatus.Pending,
+            "Candidate status must be pending"
+        );
 
         candidate.status = ApprovalStatus.Rejected;
         candidate.message = _message;
     }
 
     // Function to get all approved voters
-    function getAllApprovedCandidates() public view returns(address[] memory)
-    {
+    function getAllApprovedCandidates() public view returns (address[] memory) {
         return approvedCandidates;
     }
 
     // Function to update an existing candidate's details
-    function updateCandidate(address _candidateAddress, string memory _name, string memory _ipfs) public onlyOwner 
-    {
+    function updateCandidate(
+        address _candidateAddress,
+        string memory _name,
+        string memory _ipfs
+    ) public onlyOwner {
         Candidate storage candidate = candidates[_candidateAddress];
         require(candidate._address != address(0), "Candidate does not exist");
 
@@ -229,18 +260,25 @@ contract VotingContract
         );
     }
 
-
-    function vote(address _candidateAddress) external onlyDuringVotingPeroid
-    {
+    function vote(address _candidateAddress) external onlyDuringVotingPeroid {
         Voters storage voter = voters[msg.sender];
         require(!voter.voter_voted, "You have already voted");
 
         // Ensure the candidate address is valid and exists
-        require(candidates[_candidateAddress].candidateId != 0, "Invalid candidate address");
-        require(voter.status == ApprovalStatus.Approved, "You are not an approved voter");
+        require(
+            candidates[_candidateAddress].candidateId != 0,
+            "Invalid candidate address"
+        );
+        require(
+            voter.status == ApprovalStatus.Approved,
+            "You are not an approved voter"
+        );
 
         Candidate storage candidate = candidates[_candidateAddress];
-        require(candidate.status == ApprovalStatus.Approved, "Candidate is not approved");
+        require(
+            candidate.status == ApprovalStatus.Approved,
+            "Candidate is not approved"
+        );
 
         // Mark the voter as having voted
         voter.voter_voted = true;
@@ -259,7 +297,9 @@ contract VotingContract
     }
 
     // Function to get the particular voter's data
-    function getVoterData(address _address)
+    function getVoterData(
+        address _address
+    )
         public
         view
         returns (
@@ -269,7 +309,7 @@ contract VotingContract
             uint256,
             bool,
             string memory,
-            ApprovalStatus status 
+            ApprovalStatus status
         )
     {
         return (
@@ -284,10 +324,15 @@ contract VotingContract
     }
 
     // Approve a voter to be eligible to vote
-    function approveVoter(address _voterAddress, string memory _message) public onlyOwner
-    {
+    function approveVoter(
+        address _voterAddress,
+        string memory _message
+    ) public onlyOwner {
         Voters storage voter = voters[_voterAddress];
-        require(voter.status == ApprovalStatus.Pending, "Voter status must be pending");
+        require(
+            voter.status == ApprovalStatus.Pending,
+            "Voter status must be pending"
+        );
 
         voter.status = ApprovalStatus.Approved;
         voter.message = _message;
@@ -295,35 +340,40 @@ contract VotingContract
     }
 
     // Reject a voter with a message
-    function rejectVoter(address _voterAddress, string memory _message) public onlyOwner
-    {
+    function rejectVoter(
+        address _voterAddress,
+        string memory _message
+    ) public onlyOwner {
         Voters storage voter = voters[_voterAddress];
-        require(voter.status == ApprovalStatus.Pending, "Voter status must be pending");
+        require(
+            voter.status == ApprovalStatus.Pending,
+            "Voter status must be pending"
+        );
         voter.status = ApprovalStatus.Rejected;
         voter.message = _message; // Set the rejection message
     }
 
     // Function to get the list of people who actually voted
-    function getVotedVotersList() public view returns (address[] memory) 
-    {
+    function getVotedVotersList() public view returns (address[] memory) {
         return votedVoters;
     }
 
     // Function to get the list of voters who have the right to vote
-    function getVoterList() public view returns (address[] memory) 
-    {
+    function getVoterList() public view returns (address[] memory) {
         return votersAddress;
     }
 
     // function to return all approved voters
-    function getAllApprovedVoters() public view returns(address[] memory)
-    {
+    function getAllApprovedVoters() public view returns (address[] memory) {
         return approvedVoters;
     }
 
     //function to update existing voter's details
-    function updateVoter(address _voterAddress, string memory _name, string memory _ipfs) public onlyOwner 
-    {
+    function updateVoter(
+        address _voterAddress,
+        string memory _name,
+        string memory _ipfs
+    ) public onlyOwner {
         Voters storage voter = voters[_voterAddress];
         require(voter.voter_address != address(0), "Voter does not exist");
 
@@ -332,12 +382,13 @@ contract VotingContract
         voter.voter_ipfs = _ipfs;
     }
 
-
     // ---- Election Commision ------
 
     // Set the voting period (start and end times)
-    function setVotingPeriod(uint256 _startTime, uint256 _endTime) public onlyOwner 
-    {
+    function setVotingPeriod(
+        uint256 _startTime,
+        uint256 _endTime
+    ) public onlyOwner {
         require(_startTime < _endTime, "Start time must be before end time");
 
         startTime = _startTime;
@@ -345,15 +396,13 @@ contract VotingContract
     }
 
     //function to chnage the owner of the contract
-    function changeOwner(address newOwner) public onlyOwner 
-    {
+    function changeOwner(address newOwner) public onlyOwner {
         require(newOwner != address(0), "New owner cannot be the zero address");
         votingOrganizer = newOwner;
     }
 
     // Function to reset the contract data
-    function resetContract() public onlyOwner 
-    {
+    function resetContract() public onlyOwner {
         // Reset counters
         _voterId.reset();
         _candidateId.reset();
@@ -381,58 +430,77 @@ contract VotingContract
     }
 
     // Function to check the current status of the voting period
-    function currentVotingStatus() public view returns (string memory) 
-    {
-        if (block.timestamp < startTime) 
-        {
+    function currentVotingStatus(
+        uint256 _currentTime
+    ) public view returns (string memory) {
+        if (startTime == 0 && endTime == 0) {
+            return "Voting period not set";
+        } else if (_currentTime < startTime) {
             return "Voting has not started yet";
-        } 
-        else if (block.timestamp >= startTime && block.timestamp <= endTime) 
-        {
+            // string.concat(
+            //     "Voting has not started yet",
+            //     Strings.toString(block.timestamp)
+            // );
+        } else if (_currentTime >= startTime && _currentTime <= endTime) {
             return "Voting is in progress";
-        } 
-        else 
-        {
+            // string.concat(
+            //     "Voting is in progress",
+            //     Strings.toString(_currentTime)
+            // );
+        } else {
             return "Voting has ended";
+            // string.concat(
+            //     "Voting has ended",
+            //     Strings.toString(_currentTime)
+            // );
         }
     }
 
     // Function to get the winning candidate based on the highest vote count
-    function getWinningCandidate() public view returns (address winningCandidate, string memory name, uint256 voteCount) 
+    function getWinningCandidate(
+        uint256 _currentTime
+    )
+        public
+        view
+        returns (
+            address winningCandidate,
+            string memory name,
+            uint256 voteCount
+        )
     {
-        require(block.timestamp > endTime, "Voting period has not ended yet");
+        require(_currentTime > endTime, "Voting period has not ended yet");
 
         uint256 highestVoteCount = 0;
         address winnerAddress;
 
-        for (uint256 i = 0; i < candidateAddress.length; i++) 
-        {
+        for (uint256 i = 0; i < candidateAddress.length; i++) {
             address candidateAddr = candidateAddress[i];
             Candidate storage candidate = candidates[candidateAddr];
 
-            if (candidate.voteCount > highestVoteCount) 
-            {
+            if (candidate.voteCount > highestVoteCount) {
                 highestVoteCount = candidate.voteCount;
                 winnerAddress = candidateAddr;
             }
         }
 
         Candidate storage winningCandidateData = candidates[winnerAddress];
-        return (winnerAddress, winningCandidateData.name, winningCandidateData.voteCount);
+        return (
+            winnerAddress,
+            winningCandidateData.name,
+            winningCandidateData.voteCount
+        );
     }
 
-
-
     // Function to get the role of a user based on their address
-    // function getUserRole(address _address) public view returns (string memory) 
+    // function getUserRole(address _address) public view returns (string memory)
     // {
     //     // Check if the address is a candidate
-    //     if (candidates[_address].candidateId != 0) 
+    //     if (candidates[_address].candidateId != 0)
     //     {
     //         return "candidate";
     //     }
     //     // Check if the address is a voter
-    //     if (voters[_address].voter_voterId != 0) 
+    //     if (voters[_address].voter_voterId != 0)
     //     {
     //         return "voter";
     //     }

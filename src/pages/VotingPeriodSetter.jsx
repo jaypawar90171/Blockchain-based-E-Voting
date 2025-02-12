@@ -10,54 +10,65 @@ const VotingPeriodSetter = () => {
     const [message, setMessage] = useState('');
     const [showGuide, setShowGuide] = useState(false);
 
-  const {setelectionTime, getCurrentVotingStatus, voterLength, candidateLength} = useContext(VotingContext);
+  const {setelectionTime, getCurrentVotingStatus, voterLength, candidateLength , currentVotingStatus} = useContext(VotingContext);
 
   // console.log(getCurrentVotingStatus); 
-  
-  useEffect(() => {
-    const calculateTimeRemaining = () => {
-      const now = Math.floor(Date.now() / 1000);
-      const startTimestamp = Math.floor(new Date(startTime).getTime() / 1000);
-      const endTimestamp = Math.floor(new Date(endTime).getTime() / 1000);
+
+  function calculateTimeRemaining() {
+     // const now = Math.floor(Date.now() / 1000);
+      // const startTimestamp = Math.floor(new Date(startTime).getTime() / 1000);
+      // const endTimestamp = Math.floor(new Date(endTime).getTime() / 1000);
       
       // setStartTime(startTimestamp);
       // setEndTime(endTimestamp);
       // console.log(startTime);
       // console.log(endTime);
-    
-      const status1 = getCurrentVotingStatus();
-      // console.log("Voting Status", status1);
+      
+      // const status1 = 
+      const currentTimestamp = Math.floor(new Date().getTime() / 1000);
+      getCurrentVotingStatus(currentTimestamp);
+      // getCurrentVotingStatus();
+      // console.log("Voting Status in frontend", currentVotingStatus);
       // setStatus(status1);
-      if(status1 === "Voting is in progress")
-      {
-        setStatus('Voting Peroid is set');
-      }
-      else
-      {
-        setStatus('Error in setting status')
-      }
-
-      if (startTimestamp && now < startTimestamp) 
-      {
-        setTimeRemaining(`Voting starts in ${Math.max(startTimestamp - now, 0)} seconds`);
-        // setStatus('Upcoming');
-      } 
-      else if (endTimestamp && now < endTimestamp) 
-      {
-        setTimeRemaining(`Voting ends in ${Math.max(endTimestamp - now, 0)} seconds`);
-        // setStatus('Active');
-      } 
-      else if (startTimestamp && endTimestamp) 
-      {
-        setTimeRemaining('');
-        // setStatus('Voting period has ended');
-      } 
-      else 
-      {
-        setTimeRemaining('');
-        // setStatus('No voting period set.');
-      }
-    };
+      setStatus(currentVotingStatus)
+      // if(currentVotingStatus === 'Voting period not set'){
+      //   setStatus('Voting period not set')
+      // }else if(currentVotingStatus === 'Voting has not started yet'){
+      //   setStatus('Voting has not started yet');
+      // }else if(currentVotingStatus === 'Voting has ended')
+      // {
+      //   setStatus('Voting has ended')
+      //   // setStatus('Voting Peroid is set');
+      // }else if(currentVotingStatus === 'Voting is in progress'){
+      //   setStatus('Voting is in progress');
+      // }else
+      // {
+      //   setStatus('Error in voting status')
+      // }
+      setTimeRemaining('');
+      // if (startTimestamp && now < startTimestamp) 
+      // {
+      //   setTimeRemaining(`Voting starts in ${Math.max(startTimestamp - now, 0)} seconds`);
+      //   // setStatus('Upcoming');
+      // } 
+      // else if (endTimestamp && now < endTimestamp) 
+      // {
+      //   setTimeRemaining(`Voting ends in ${Math.max(endTimestamp - now, 0)} seconds`);
+      //   // setStatus('Active');
+      // } 
+      // else if (startTimestamp && endTimestamp) 
+      // {
+      //   setTimeRemaining('');
+      //   // setStatus('Voting period has ended');
+      // } 
+      // else 
+      // {
+      //   setTimeRemaining('');
+      //   // setStatus('No voting period set.');
+      // }
+  }
+  useEffect(() => {
+    
     
     calculateTimeRemaining();
     const interval = setInterval(calculateTimeRemaining, 1000);

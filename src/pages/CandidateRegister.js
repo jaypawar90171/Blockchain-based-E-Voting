@@ -168,7 +168,7 @@ export default function CandidateRegister() {
                   </svg>
                   <p className="font-semibold">{el[1]}</p>
                   <p className="text-sm text-gray-600">{el[5] ? el[5].slice(0, 20) : 'N/A'}</p>
-                  <p className="text-sm">Voter id:{el[2].toNumber() || 'No position'}</p>
+                  <p className="text-sm">Voter id:{Number(el[2]) || 'No position'}</p>
                 </motion.div>
               ))
             ) : (

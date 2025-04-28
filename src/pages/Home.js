@@ -198,9 +198,9 @@ const CandidateCard = ({ candidate, giveVote }) => {
               <div className="p-1.5 rounded-md bg-purple-900/30 text-purple-400">
                 <Vote className="h-4 w-4" />
               </div>
-              <span className="text-gray-300">
+              {/* <span className="text-gray-300">
                 Votes: <span className="font-bold text-white">{candidate[3].toNumber()}</span>
-              </span>
+              </span> */}
             </div>
           </div>
 
@@ -402,7 +402,7 @@ const Home = () => {
           </div>
 
           {/* Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <StatsCard
               icon={<Users className="h-5 w-5 text-blue-100" />}
               title="Total Candidates"
@@ -428,7 +428,7 @@ const Home = () => {
               color="from-indigo-600 to-indigo-800"
               suffix="%"
             />
-          </div>
+          </div> */}
 
           {/* Main Dashboard Content */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -486,7 +486,7 @@ const Home = () => {
               </motion.div>
 
               {/* Voting Statistics Card */}
-              <motion.div
+              {/* <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.1, duration: 0.5 }}
@@ -568,7 +568,7 @@ const Home = () => {
                     )}
                   </div>
                 </div>
-              </motion.div>
+              </motion.div> */}
 
               {/* Help Card */}
               <motion.div

@@ -357,7 +357,7 @@ const Home = () => {
         <AnimatePresence>{error && <ErrorAlert message={error} onClose={() => setError(null)} />}</AnimatePresence>
 
         {/* Header */}
-        <header className="border-b border-gray-800 backdrop-blur-sm bg-gray-900/80 sticky top-0 z-10">
+        {/* <header className="border-b border-gray-800 backdrop-blur-sm bg-gray-900/80 sticky top-0 z-10">
           <div className="container mx-auto px-4 py-4">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-3">
@@ -377,7 +377,7 @@ const Home = () => {
               </div>
             </div>
           </div>
-        </header>
+        </header> */}
 
         {/* Main Content */}
         <main className="container mx-auto px-4 py-8">
@@ -402,7 +402,7 @@ const Home = () => {
           </div>
 
           {/* Stats Grid */}
-          {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <StatsCard
               icon={<Users className="h-5 w-5 text-blue-100" />}
               title="Total Candidates"
@@ -428,7 +428,7 @@ const Home = () => {
               color="from-indigo-600 to-indigo-800"
               suffix="%"
             />
-          </div> */}
+          </div>
 
           {/* Main Dashboard Content */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

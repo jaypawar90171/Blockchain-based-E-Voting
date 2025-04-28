@@ -76,17 +76,17 @@ const StatCard = ({ title, value, icon, color }) => {
 }
 
 // Sidebar Item component
-const SidebarItem = ({ icon, text, active }) => {
-  return (
-    <div
-      className={`flex items-center space-x-3 p-3 rounded-lg cursor-pointer transition-all ${active ? "bg-purple-900/30 text-purple-400" : "text-gray-400 hover:bg-gray-800 hover:text-gray-300"}`}
-    >
-      {icon}
-      <span className="font-medium">{text}</span>
-      {active && <ChevronRight className="ml-auto h-4 w-4" />}
-    </div>
-  )
-}
+// const SidebarItem = ({ icon, text, active }) => {
+//   return (
+//     <div
+//       className={`flex items-center space-x-3 p-3 rounded-lg cursor-pointer transition-all ${active ? "bg-purple-900/30 text-purple-400" : "text-gray-400 hover:bg-gray-800 hover:text-gray-300"}`}
+//     >
+//       {icon}
+//       <span className="font-medium">{text}</span>
+//       {active && <ChevronRight className="ml-auto h-4 w-4" />}
+//     </div>
+//   )
+// }
 
 // Winner Profile component
 const WinnerProfile = ({ winner }) => {
@@ -194,7 +194,7 @@ export default function WinningCandidate() {
         {showConfetti && <Confetti />}
 
         {/* Sidebar */}
-        <div className="w-64 bg-gray-800 border-r border-gray-700 p-4 hidden md:block">
+        {/* <div className="w-64 bg-gray-800 border-r border-gray-700 p-4 hidden md:block">
           <div className="flex items-center space-x-2 mb-8 px-2">
             <div className="bg-purple-600 p-1.5 rounded">
               <Trophy className="h-5 w-5 text-white" />
@@ -213,7 +213,7 @@ export default function WinningCandidate() {
           <div className="absolute bottom-4 left-4 right-4">
             <SidebarItem icon={<LogOut className="h-5 w-5" />} text="Logout" />
           </div>
-        </div>
+        </div> */}
 
         {/* Main Content */}
         <div className="flex-1 p-6 overflow-auto">

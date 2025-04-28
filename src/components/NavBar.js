@@ -33,6 +33,7 @@ const Navbar = () => {
       title: "Election Commission",
       icon: <Settings className="w-4 h-4 mr-2" />,
       dropdown: [
+        { title: "EC Dashboard", link: "/ecdashboard" },
         { title: "Authorize Voters", link: "/unapprovedVoters" },
         { title: "Authorize Candidates", link: "/unapprovedCandidates" },
         { title: "Set Voting Period", link: "/votingPeroid" },

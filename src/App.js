@@ -17,6 +17,7 @@ import WinningCandidate from './pages/WinningCandidate';
 import ResetVotingContract from './pages/ResetVotingContract';
 import Landing from './pages/Landing';
 import FaceAuth from './components/FaceAuth';
+import ECDashborad from './pages/ECDashboard';
 
 export default function App() {
   
@@ -40,6 +41,8 @@ export default function App() {
         <Route path='/winner' element={<WinningCandidate/>}></Route>
         <Route path='/face-auth' element={<FaceAuth/>}></Route>
         <Route path='/reset' element={<ResetVotingContract/>}></Route>
+        <Route path='/ecdashboard' element={<ECDashborad/>}></Route>
+
         {/* <Route path='/slidebar' element={<Slidebar/>}></Route> */}
         <Route path='*' element={<PageNotFound/>}></Route> // Add a catch-all route for page not found
       </Routes>

@@ -14,8 +14,9 @@ const FaceAuth = () => {
   const [referenceDescriptor, setReferenceDescriptor] = useState(null);
   const [processingVote, setProcessingVote] = useState(false);
   const [voteSuccess, setVoteSuccess] = useState(false);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const { giveVote } = useContext(VotingContext);
+  const { giveVote, voterArray, getUserData } = useContext(VotingContext);
 
   useEffect(() => {
     const loadModels = async () => {
@@ -28,23 +29,58 @@ const FaceAuth = () => {
           faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
         ]);
         
-        const img = await faceapi.fetchImage('https://gateway.pinata.cloud/ipfs/QmRXvLVJwn3MHKWixfPSTLXpyCvmDEMVKCNxTFduquYoA6');
+        // Get current voter address - you might have it in localStorage or context
+        const voterAddress = localStorage.getItem('currentVoterAddress') || 
+                      (window.ethereum && window.ethereum.selectedAddress);
+        
+        if (!voterAddress) {
+          setError("Voter address not found. Please login again.");
+          setShowModal(true);
+          setIsModelLoading(false);
+          return;
+        }
+
+        // Find voter by matching the ethereum address (index 2) - case insensitive
+    const voterData = voterArray.find(
+      voter => voter[2].toLowerCase() === voterAddress.toLowerCase()
+    );
+  
+    if (!voterData) {
+      setError("Voter not found. Please ensure you are registered.");
+      setShowModal(true);
+      setIsModelLoading(false);
+      return;
+    }
+        
+        // Get voter's IPFS hash and construct URL
+        const voterIpfsHash = voterData[5];
+        console.log("Voter IPFS Hash:", voterIpfsHash);
+        const imageUrl = `https://gateway.pinata.cloud/ipfs/${voterIpfsHash}`;
+        
+        // Fetch the voter's image and extract face descriptor
+        const img = await faceapi.fetchImage(imageUrl);
         const detection = await faceapi.detectSingleFace(img)
           .withFaceLandmarks()
           .withFaceDescriptor();
           
         if (detection) {
           setReferenceDescriptor(detection.descriptor);
+        } else {
+          setError("Could not detect face in reference image");
+          setShowModal(true);
         }
         
         setIsModelLoading(false);
       } catch (error) {
-        console.error('Error loading models:', error);
+        console.error('Error loading models or reference image:', error);
+        setError("Error preparing face authentication");
+        setShowModal(true);
+        setIsModelLoading(false);
       }
     };
 
     loadModels();
-  }, []);
+  }, [voterArray, getUserData]);
 
   // This function will be called once authentication is successful
   const processVote = async () => {
@@ -64,10 +100,12 @@ const FaceAuth = () => {
         setTimeout(() => navigate('/'), 2000);
       } else {
         console.error("No candidate address found in localStorage");
+        setError("No candidate selected for voting");
         setShowModal(true);
       }
     } catch (error) {
       console.error("Error during voting:", error);
+      setError("Failed to record your vote on the blockchain");
       setShowModal(true);
     } finally {
       setProcessingVote(false);
@@ -77,21 +115,30 @@ const FaceAuth = () => {
   const handleCapture = async () => {
     if (!webcamRef.current?.video || !referenceDescriptor || isAuthenticated !== null) return;
 
-    const detection = await faceapi.detectSingleFace(webcamRef.current.video)
-      .withFaceLandmarks()
-      .withFaceDescriptor();
-
-    if (detection) {
-      const distance = faceapi.euclideanDistance(detection.descriptor, referenceDescriptor);
-      const authenticated = distance < 0.6;
-      setIsAuthenticated(authenticated);
-      
-      if (authenticated) {
-        // Process the vote immediately after successful authentication
-        processVote();
-      } else {
-        setShowModal(true);
+    try {
+      const detection = await faceapi.detectSingleFace(webcamRef.current.video)
+        .withFaceLandmarks()
+        .withFaceDescriptor();
+  
+      if (detection) {
+        const distance = faceapi.euclideanDistance(detection.descriptor, referenceDescriptor);
+        const threshold = 0.6; // Adjust this threshold based on testing
+        const authenticated = distance < threshold;
+        
+        console.log(`Face match distance: ${distance}, Authenticated: ${authenticated}`);
+        
+        setIsAuthenticated(authenticated);
+        
+        if (authenticated) {
+          // Process the vote immediately after successful authentication
+          processVote();
+        } else {
+          setError("Face authentication failed. Please ensure good lighting and try again.");
+          setShowModal(true);
+        }
       }
+    } catch (err) {
+      console.error("Error during face capture:", err);
     }
   };
 
@@ -177,9 +224,14 @@ const FaceAuth = () => {
 
       {showModal && (
         <AuthModal 
+          message={error || "Authentication failed. Please try again."}
           onClose={() => {
             setShowModal(false);
-            navigate('/');
+            if (error && error.includes("not found")) {
+              navigate('/');
+            } else {
+              setIsAuthenticated(null);
+            }
           }} 
         />
       )}

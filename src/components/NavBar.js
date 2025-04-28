@@ -16,7 +16,6 @@ const Navbar = () => {
       title: "Candidate",
       icon: <Users className="w-4 h-4 mr-2" />,
       dropdown: [
-        { title: "Home", link: "/home" },
         { title: "Candidate register", link: "/candidateRegister" },
       ],
     },

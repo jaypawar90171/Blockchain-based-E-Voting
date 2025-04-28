@@ -535,7 +535,7 @@ const ECDashborad = () => {
                     </div>
                   </div>
 
-                  <div className="mt-6 pt-6 border-t border-gray-800">
+                  {/* <div className="mt-6 pt-6 border-t border-gray-800">
                     <div className="flex items-center gap-2 mb-3">
                       <Award className="h-5 w-5 text-amber-400" />
                       <h3 className="text-lg font-bold text-white">Leading Candidate</h3>
@@ -566,7 +566,7 @@ const ECDashborad = () => {
                     ) : (
                       <p className="text-gray-400">No approved candidates yet</p>
                     )}
-                  </div>
+                  </div> */}
                 </div>
               </motion.div>
 

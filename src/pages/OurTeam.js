@@ -9,7 +9,7 @@ const teamMembers = [
   {
     name: "Jay Pawar",
     role: "Smart Contracts & Backend",
-    image: "../../asset/jay1.jpg",
+    image: "../../asset/photo.jpg",
     bio: "Jay is an expert in React and Next.js, passionate about creating seamless user experiences.",
     social: {
       twitter: "#",

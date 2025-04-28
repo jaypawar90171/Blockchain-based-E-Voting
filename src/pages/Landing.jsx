@@ -40,7 +40,7 @@ function FloatingPaths({ position, colorIndex = 0, yOffset = 0, xOffset = 0, isD
   return (
     <div className="absolute inset-0 pointer-events-none">
       <svg className="w-full h-full" viewBox="0 0 696 316" fill="none">
-        <title>eVoteLedger</title>
+        <title>BlockChain Based Decentralized Voting System</title>
         {paths.map((path) => (
           <motion.path
             key={path.id}
@@ -67,10 +67,9 @@ function FloatingPaths({ position, colorIndex = 0, yOffset = 0, xOffset = 0, isD
 
 export default function Landing() {
   const [isDarkMode, setIsDarkMode] = useState(true)
-  const title = "eVoteLedger"
+  const title = "BlockChain Based Decentralized Voting System"
   const words = title.split(" ")
 
-  // Apply theme to document body
   useEffect(() => {
     document.body.classList.toggle("light-mode", !isDarkMode)
     document.body.classList.toggle("dark-mode", isDarkMode)

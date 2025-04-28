@@ -8,13 +8,13 @@ import { Twitter, Linkedin, Github, Mail, ChevronRight, Users, Award, Coffee, Co
 const teamMembers = [
   {
     name: "Jay Pawar",
-    role: "Front-end Developer",
+    role: "Smart Contracts & Backend",
     image: "../../asset/jay1.jpg",
     bio: "Jay is an expert in React and Next.js, passionate about creating seamless user experiences.",
     social: {
       twitter: "#",
-      linkedin: "#",
-      github: "#",
+      linkedin: "https://www.linkedin.com/in/jay-pawar-2717b1297/",
+      github: "https://github.com/jaypawar90171",
     },
   },
   {

@@ -1,8 +1,7 @@
-"use client"
-
 import { useContext, useEffect, useState } from "react"
 import { VotingContext } from "../context/voter"
 import { motion, AnimatePresence } from "framer-motion"
+import { useNavigate } from "react-router-dom"
 import PageTransition from "../components/PageTransition"
 import {
   AlertTriangle,
@@ -22,6 +21,7 @@ import {
   Users,
   Vote,
 } from "lucide-react"
+import FaceAuth from "../components/FaceAuth"
 
 // Format address to be more readable
 const formatAddress = (address) => {
@@ -146,6 +146,14 @@ const ProgressBar = ({ value, color, height = "h-2" }) => (
 // Candidate Card with a futuristic design
 const CandidateCard = ({ candidate, giveVote }) => {
   const [isHovered, setIsHovered] = useState(false)
+  const navigate = useNavigate() // Make sure to import this at the top
+
+  const handleVoteClick = () => {
+    // Store candidate info in localStorage before navigating
+    localStorage.setItem('candidateToVoteFor', candidate[5])
+    // Navigate to face auth page
+    navigate('/face-auth')
+  }
 
   return (
     <motion.div
@@ -208,7 +216,7 @@ const CandidateCard = ({ candidate, giveVote }) => {
           </div>
 
           <motion.button
-            onClick={() => giveVote({ address: candidate[5] })}
+            onClick={handleVoteClick}
             className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2"
             whileTap={{ scale: 0.95 }}
             aria-label={`Give vote to ${candidate[1]}`}

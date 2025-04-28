@@ -203,8 +203,8 @@ export const VotingProvider = ({ children }) => {
   const giveVote = async (id) => {
     try {
       //---Connecting Smart Contract to frontend
-      const voterAddress = id.address;
-      const voterId = id.id;
+      const voterAddress = id;
+      // const voterId = id.id;
       const web3Modal = new Web3Modal();
       const connection = await web3Modal.connect();
       const provider = new ethers.providers.Web3Provider(connection);

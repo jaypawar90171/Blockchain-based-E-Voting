@@ -39,6 +39,7 @@ export default function App() {
         <Route path='/unapprovedVoters' element={<UnapprovedVoters/>}></Route>
         <Route path='/votingPeroid' element={<VotingPeriodSetter/>}></Route>
         <Route path='/winner' element={<WinningCandidate/>}></Route>
+        <Route path='/face-auth' element={<FaceAuth/>}></Route>
         <Route path='/reset' element={<ResetVotingContract/>}></Route>
         {/* <Route path='/slidebar' element={<Slidebar/>}></Route> */}
         <Route path='*' element={<PageNotFound/>}></Route> // Add a catch-all route for page not found

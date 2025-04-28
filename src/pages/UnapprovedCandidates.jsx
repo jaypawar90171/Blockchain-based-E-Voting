@@ -1,217 +1,607 @@
-import React, { useContext , useEffect, useState} from 'react';
-import { VotingContext } from '../context/voter';
-import {motion, AnimatePresence} from 'framer-motion'
-import PageTransition from '../components/PageTransition';
+import { useContext, useEffect, useState } from "react"
+import { VotingContext } from "../context/voter"
+import { motion, AnimatePresence } from "framer-motion"
+import { useNavigate } from "react-router-dom"
+import PageTransition from "../components/PageTransition"
+import { AlertTriangle, Award, Calendar, CheckCircle, ChevronRight, Clock, Eye, FileText, HelpCircle, Info, Lock, Search, Shield, Star, TrendingUp, Users, Vote, X } from 'lucide-react'
 
+// Format address to be more readable
+const formatAddress = (address) => {
+  if (!address) return ""
+  return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`
+}
+
+// Animated Counter Component
+const AnimatedCounter = ({ value, className }) => {
+  const [displayValue, setDisplayValue] = useState(0)
+
+  useEffect(() => {
+    let start = 0
+    const end = Number.parseInt(value)
+
+    if (start === end) return
+
+    const duration = 1000
+    const increment = end / (duration / 16)
+
+    const timer = setInterval(() => {
+      start += increment
+      if (start > end) start = end
+      setDisplayValue(Math.floor(start))
+
+      if (start === end) clearInterval(timer)
+    }, 16)
+
+    return () => clearInterval(timer)
+  }, [value])
+
+  return <span className={className}>{displayValue}</span>
+}
+
+// Stats Card Component
+const StatsCard = ({ icon, title, value, color, suffix = "", prefix = "" }) => (
+  <motion.div
+    className="relative overflow-hidden rounded-xl"
+    whileHover={{ scale: 1.02 }}
+    transition={{ type: "spring", stiffness: 400, damping: 10 }}
+  >
+    <div className={`absolute inset-0 bg-gradient-to-br ${color} opacity-10 rounded-xl`} />
+    <div className="relative p-5 backdrop-blur-sm bg-gray-900/80 border border-gray-800 rounded-xl">
+      <div className="flex justify-between items-start">
+        <div>
+          <p className="text-gray-400 text-sm font-medium mb-1">{title}</p>
+          <p className="text-2xl font-bold text-white flex items-baseline">
+            {prefix}
+            <AnimatedCounter value={value} className="text-2xl font-bold text-white" />
+            {suffix}
+          </p>
+        </div>
+        <div className={`p-2 rounded-lg ${color.replace("from-", "bg-").split(" ")[0]}`}>{icon}</div>
+      </div>
+    </div>
+  </motion.div>
+)
+
+// Progress Bar Component
+const ProgressBar = ({ value, color, height = "h-2" }) => (
+  <div className={`w-full bg-gray-800 rounded-full overflow-hidden ${height}`}>
+    <motion.div
+      initial={{ width: 0 }}
+      animate={{ width: `${value}%` }}
+      transition={{ duration: 1, ease: "easeOut" }}
+      className={`${color} rounded-full ${height}`}
+    />
+  </div>
+)
+
+// Candidate Card with a futuristic design
+const CandidateCard = ({ candidate, onApprove, onReject, onViewDetails }) => {
+  const [isHovered, setIsHovered] = useState(false)
+
+  return (
+    <motion.div
+      className="relative overflow-hidden rounded-xl"
+      whileHover={{ scale: 1.03 }}
+      transition={{ type: "spring", stiffness: 300 }}
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
+    >
+      <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/30 to-purple-900/30 rounded-xl" />
+      <div className="absolute inset-0 border border-indigo-500/20 rounded-xl" />
+      <div className="relative bg-gray-900/80 backdrop-blur-sm rounded-xl overflow-hidden border border-indigo-500/30">
+        <div className="relative w-full h-64 overflow-hidden">
+          <img
+            src={`https://gateway.pinata.cloud/ipfs/${candidate[4]}`}
+            alt={`Profile picture of ${candidate[1]}`}
+            className="w-full h-full object-cover"
+          />
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/70 to-transparent"
+            animate={{ opacity: isHovered ? 0.9 : 0.7 }}
+          />
+          <div className="absolute bottom-0 left-0 right-0 p-4">
+            <h2 className="text-2xl font-bold text-white">{candidate[1]}</h2>
+            <div className="flex items-center mt-1">
+              <div className="px-2 py-1 bg-yellow-900/60 backdrop-blur-sm rounded-md text-xs text-yellow-300 border border-yellow-700/50">
+                Pending Approval
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-5 space-y-4">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 rounded-md bg-blue-900/30 text-blue-400">
+                <Users className="h-4 w-4" />
+              </div>
+              <span className="text-gray-300">Age: {candidate[0]}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 rounded-md bg-purple-900/30 text-purple-400">
+                <Vote className="h-4 w-4" />
+              </div>
+              <span className="text-gray-300">ID: {candidate[2].toNumber()}</span>
+            </div>
+          </div>
+
+          <div className="text-gray-400 text-sm truncate">
+            Address: {formatAddress(candidate[5])}
+          </div>
+
+          <motion.button
+            onClick={() => onViewDetails(candidate)}
+            className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2"
+            whileTap={{ scale: 0.95 }}
+          >
+            <Eye className="h-5 w-5" />
+            View Details
+          </motion.button>
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
+// Error Alert Component
+const ErrorAlert = ({ message, onClose }) => (
+  <motion.div
+    initial={{ opacity: 0, y: -50 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: -50 }}
+    transition={{ duration: 0.3 }}
+    className="p-4 mb-4 text-sm rounded-lg fixed top-4 left-1/2 transform -translate-x-1/2 z-50 shadow-lg bg-red-900/90 backdrop-blur-sm border border-red-700 text-white"
+    role="alert"
+  >
+    <div className="flex items-center">
+      <AlertTriangle className="w-5 h-5 mr-2 text-red-300" />
+      <span className="font-medium mr-2">Error:</span> {message}
+    </div>
+    <button onClick={onClose} className="absolute top-1 right-1 text-red-300 hover:text-white">
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </motion.div>
+)
+
+// Candidate Details Modal
+const CandidateDetailsModal = ({ candidate, onClose, onApprove, onReject, message, setMessage }) => (
+  <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+    onClick={onClose}
+  >
+    <motion.div
+      initial={{ scale: 0.9, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      exit={{ scale: 0.9, opacity: 0 }}
+      transition={{ type: "spring", stiffness: 300 }}
+      className="relative max-w-lg w-full rounded-xl overflow-hidden"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/30 to-purple-900/30 rounded-xl" />
+      <div className="absolute inset-0 border border-indigo-500/20 rounded-xl" />
+      <div className="relative bg-gray-900/95 backdrop-blur-sm p-6 rounded-xl border border-indigo-500/30">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
+        >
+          <X className="h-6 w-6" />
+        </button>
+
+        <div className="flex flex-col md:flex-row gap-6">
+          <div className="w-full md:w-1/3">
+            <div className="rounded-xl overflow-hidden border-2 border-indigo-500/30">
+              <img
+                src={`https://gateway.pinata.cloud/ipfs/${candidate[4]}`}
+                alt={`Profile picture of ${candidate[1]}`}
+                className="w-full h-auto object-cover"
+              />
+            </div>
+          </div>
+
+          <div className="w-full md:w-2/3 space-y-4">
+            <h2 className="text-3xl font-bold text-white">{candidate[1]}</h2>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-gray-800/50 backdrop-blur-sm rounded-lg p-3 border border-gray-700">
+                <p className="text-xs text-gray-400 mb-1">ID</p>
+                <p className="text-sm font-medium text-white">{candidate[2].toNumber()}</p>
+              </div>
+              <div className="bg-gray-800/50 backdrop-blur-sm rounded-lg p-3 border border-gray-700">
+                <p className="text-xs text-gray-400 mb-1">Age</p>
+                <p className="text-sm font-medium text-white">{candidate[0]}</p>
+              </div>
+            </div>
+
+            <div className="bg-gray-800/50 backdrop-blur-sm rounded-lg p-3 border border-gray-700">
+              <p className="text-xs text-gray-400 mb-1">Blockchain Address</p>
+              <p className="text-sm font-medium text-white break-all">{candidate[5]}</p>
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="message" className="text-sm text-gray-300">
+                Approval/Rejection Message
+              </label>
+              <textarea
+                id="message"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="Enter a reason for approval or rejection"
+                className="w-full px-4 py-3 bg-gray-800/70 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                rows={3}
+              />
+            </div>
+
+            <div className="flex gap-4 pt-2">
+              <motion.button
+                onClick={() => onApprove(candidate[5])}
+                className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2"
+                whileTap={{ scale: 0.95 }}
+              >
+                <CheckCircle className="h-5 w-5" />
+                Approve
+              </motion.button>
+              <motion.button
+                onClick={() => onReject(candidate[5])}
+                className="flex-1 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2"
+                whileTap={{ scale: 0.95 }}
+              >
+                <X className="h-5 w-5" />
+                Reject
+              </motion.button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  </motion.div>
+)
+
+// Main UnapprovedCandidates Component
 const UnapprovedCandidates = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [sortBy, setSortBy] = useState('name');
-  const [selectedCandidate, setSelectedCandidate] = useState(null);
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState(null);
-  const itemsPerPage = 6;
+  const {
+    candidateArray,
+    ApprovedCandidate,
+    RejectCandidate,
+    checkIfWalletIsConnected,
+    currentAccount,
+    userRole,
+  } = useContext(VotingContext)
 
-  const { candidateArray, ApprovedCandidate, RejectCandidate } = useContext(VotingContext);
-  const unapprovedCandidates = candidateArray.filter(candidate => candidate[6] === 0);
+  const [searchTerm, setSearchTerm] = useState("")
+  const [currentPage, setCurrentPage] = useState(1)
+  const [sortBy, setSortBy] = useState("name")
+  const [selectedCandidate, setSelectedCandidate] = useState(null)
+  const [message, setMessage] = useState("")
+  const [error, setError] = useState(null)
+  const [activeTab, setActiveTab] = useState("all")
+  const itemsPerPage = 6
+
+  const unapprovedCandidates = candidateArray.filter((candidate) => candidate[6] === 0)
+
+  useEffect(() => {
+    checkIfWalletIsConnected()
+  }, [])
+
+  const handleApprove = (id) => {
+    if (!message) {
+      setError("Please enter a reason before approving.")
+      return
+    }
+    ApprovedCandidate(id, message)
+    console.log(`Approved candidate with address: ${id} Reason: ${message}`)
+    setMessage("")
+    setSelectedCandidate(null)
+  }
+
+  const handleReject = (id) => {
+    if (!message) {
+      setError("Please enter a reason before rejecting.")
+      return
+    }
+    RejectCandidate(id, message)
+    console.log(`Rejected candidate with address: ${id} Reason: ${message}`)
+    setMessage("")
+    setSelectedCandidate(null)
+  }
 
   const sortedCandidates = [...unapprovedCandidates].sort((a, b) => {
-    if (sortBy === 'name') return a[1].localeCompare(b[1]);
-    if (sortBy === 'id') return parseInt(a[6], 16) - parseInt(b[6], 16);
-    return 0;
-  });
+    if (sortBy === "name") return a[1].localeCompare(b[1])
+    if (sortBy === "id") return a[2].toNumber() - b[2].toNumber()
+    if (sortBy === "age") return a[0] - b[0]
+    return 0
+  })
 
-  const filteredCandidates = sortedCandidates.filter(candidate =>
-    candidate[1].toLowerCase().includes(searchTerm.toLowerCase()) ||
-    candidate[0].includes(searchTerm)
-  );
+  const filteredCandidates = sortedCandidates.filter(
+    (candidate) =>
+      candidate[1].toLowerCase().includes(searchTerm.toLowerCase()) ||
+      candidate[0].toString().includes(searchTerm) ||
+      candidate[2].toNumber().toString().includes(searchTerm) ||
+      candidate[5].toLowerCase().includes(searchTerm.toLowerCase())
+  )
 
-  const pageCount = Math.ceil(filteredCandidates.length / itemsPerPage);
+  const pageCount = Math.ceil(filteredCandidates.length / itemsPerPage)
   const paginatedCandidates = filteredCandidates.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
-  );
+  )
 
-  const handleApprove = (id) => {
-    if(!message)
-    {
-        setError("Please enter a reason before approving.");
-        return;
-    }
-    ApprovedCandidate(id, message);
-    console.log(`Approved candidate with address: ${id} Reason: ${message}`);
-    setMessage(''); 
-  };
+  // Wallet connection screen
+  if (!currentAccount) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black flex items-center justify-center p-4">
+        <div className="relative max-w-md w-full overflow-hidden rounded-2xl">
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/20 to-purple-600/20 rounded-2xl" />
+          <div className="absolute inset-0 border border-indigo-500/20 rounded-2xl" />
+          <div className="relative bg-gray-900/80 backdrop-blur-sm p-8 rounded-2xl border border-indigo-500/30 text-center">
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="mb-6"
+            >
+              <div className="w-20 h-20 mx-auto bg-gradient-to-br from-indigo-600 to-purple-600 rounded-full flex items-center justify-center">
+                <Vote className="h-10 w-10 text-white" />
+              </div>
+            </motion.div>
 
-  const handleReject = (id) => {
-    if(!message)
-    {
-        setError("Please enter a reason before Rejecting.");
-        return;
-    }
-    RejectCandidate(id, message)
-    console.log(`Rejected candiate with address: ${id} Reason:${message}`);
-    setMessage('');
-  };
+            <motion.h2
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.1, duration: 0.5 }}
+              className="text-3xl font-bold text-white mb-4"
+            >
+              Decentralized Voting
+            </motion.h2>
 
-  const ErrorAlert = ({ message, onClose }) => (
-    <motion.div 
-      initial={{ opacity: 0, y: -50 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -50 }}
-      transition={{ duration: 0.3 }}
-      className="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-red-600 dark:text-white fixed top-4 left-1/2 transform -translate-x-1/2 z-50 shadow-lg"
-      role="alert"
-    >
-      <div className="flex items-center">
-        <svg className="w-5 h-5 mr-2 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-        </svg>
-        <span className="font-medium mr-2">Error:</span> {message}
+            <motion.p
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+              className="text-gray-300 mb-8"
+            >
+              Connect your wallet to access the secure blockchain-based voting platform
+            </motion.p>
+
+            <motion.button
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.3, duration: 0.5 }}
+              onClick={checkIfWalletIsConnected}
+              className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-2"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+            >
+              <Lock className="h-5 w-5" />
+              Connect Wallet
+            </motion.button>
+
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.4, duration: 0.5 }}
+              className="mt-6 text-sm text-gray-400"
+            >
+              Powered by Ethereum Blockchain Technology
+            </motion.div>
+          </div>
+        </div>
       </div>
-      <button onClick={onClose} className="absolute top-1 right-1 text-red-500 hover:text-red-700">
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-    </motion.div>
-  );
-  
-  useEffect(() => {
-    if(error)
-    {
-      setError(error);
-    }
-  }, [error])
-  
+    )
+  }
+
   return (
     <PageTransition>
-    <div className="container mx-auto px-4 py-8 bg-gray-100">
-      <h1 className="text-3xl font-bold mb-6 text-center">Unapproved Candidates</h1>
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-gray-100">
+        {/* Error Alert */}
+        <AnimatePresence>{error && <ErrorAlert message={error} onClose={() => setError(null)} />}</AnimatePresence>
 
-      {/*  Displaying the error alert  */}
-      <AnimatePresence>
-        {error && <ErrorAlert message={error} onClose={() => setError(null)} />}
-      </AnimatePresence>
-      
-      <div className="mb-6 flex flex-col md:flex-row justify-between items-center border-black">
-        <input
-          type="text"
-          placeholder="Search by name or ID"
-          className="w-full md:w-64 px-4 py-2 rounded-md border border-gray-300 mb-4 md:mb-0"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <select
-          className="w-full md:w-auto px-4 py-2 rounded-md border border-gray-300"
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-        >
-          <option value="name">Sort by Name</option>
-          <option value="id">Sort by ID</option>
-        </select>
-      </div>
-
-      {paginatedCandidates.length === 0 ? (
-        <p className="text-center text-gray-600">No unapproved candidates found.</p>
-      ) : (
-         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {paginatedCandidates.map((candidate) => (
-        <motion.div
-          key={candidate[2].toNumber()}
-          className="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl max-w-sm"
-          whileHover={{ scale: 1.03 }}
-          transition={{ type: "spring", stiffness: 300 }}
-        >
-          <div className="relative h-64 overflow-hidden">
-            <img
-              src={`https://gateway.pinata.cloud/ipfs/${candidate[4]}` || "/placeholder-avatar.png"}
-              alt={`Profile picture of ${candidate[1]}`}
-              className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
-            />
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
-              <h2 className="text-2xl font-bold text-white text-shadow">{candidate[1]}</h2>
-            </div>
-          </div>
-          <div className="p-6 space-y-4">
+        {/* Header */}
+        <header className="border-b border-gray-800 backdrop-blur-sm bg-gray-900/80 sticky top-0 z-10">
+          <div className="container mx-auto px-4 py-4">
             <div className="flex justify-between items-center">
-              <p className="text-gray-600">ID: {candidate[2].toNumber()}</p>
-              {candidate[6] === 0 && (
-                <span className="inline-block bg-yellow-200 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
-                  Pending Approval
-                </span>
-              )}
-            </div>
-            <p className="text-gray-600 text-sm break-all">
-              Address: {candidate[5].substring(0, 20)}...
-            </p>
-            <motion.button
-              onClick={() => setSelectedCandidate(candidate)}
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-300"
-              whileTap={{ scale: 0.95 }}
-              aria-label={`View details of ${candidate[1]}`}
-            >
-              View Details
-            </motion.button>
-          </div>
-        </motion.div>
-      ))}
-    </div>
-      )}
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-full flex items-center justify-center">
+                  <Vote className="h-5 w-5 text-white" />
+                </div>
+                <h1 className="text-xl font-bold text-white hidden sm:block">Decentralized Voting</h1>
+              </div>
 
-      {pageCount > 1 && (
-        <div className="mt-8 flex justify-center">
-          {Array.from({ length: pageCount }, (_, i) => i + 1).map((page) => (
-            <button
-              key={page}
-              onClick={() => setCurrentPage(page)}
-              className={`mx-1 px-4 py-2 rounded-md ${
-                currentPage === page
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-            >
-              {page}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {selectedCandidate && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg p-8 max-w-lg w-full">
-            <h2 className="text-2xl font-bold mb-4">{selectedCandidate[1]}</h2>
-            <p><strong>ID:</strong> {selectedCandidate[2].toNumber()}</p>
-            <p><strong>Age:</strong> {selectedCandidate[0]}</p>
-            <p><strong>Blockchain Address:</strong> {selectedCandidate[5]}</p>
-            <div className="mt-4 flex justify-between">
-                <button
-                  onClick={() => handleApprove(selectedCandidate[5])}
-                  className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition duration-300"> Approve
-                </button>
-                <button
-                  onClick={() => handleReject(selectedCandidate[5])}
-                  className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition duration-300"> Reject
-                </button>
-                <div className=' items-center border-black'>
-                <input type="text" placeholder="Enter the Message" className="w-full md:w-64 px-4 py-2 rounded-md border border-gray-300 mb-4 md:mb-0"
-                value={message}
-                onChange={(e) => {setMessage(e.target.value)}}
-                />
+              <div className="flex items-center gap-3">
+                <div className="px-3 py-1.5 bg-gray-800/80 backdrop-blur-sm rounded-lg border border-gray-700 text-sm text-gray-300 hidden sm:block">
+                  <span className="text-indigo-400">{formatAddress(currentAccount)}</span>
+                </div>
+                <div className="px-3 py-1.5 bg-indigo-900/30 backdrop-blur-sm rounded-lg border border-indigo-700/50 text-sm text-indigo-300">
+                  <span className="capitalize">{userRole || "Admin"}</span>
                 </div>
               </div>
-            <button
-              onClick={() => setSelectedCandidate(null)}
-              className="mt-6 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-300"
-            >
-              Close
-            </button>
+            </div>
           </div>
-        </div>
-      )}
-    </div>
-    </PageTransition>
-  );
-};
+        </header>
 
-export default UnapprovedCandidates;
+        {/* Main Content */}
+        <main className="container mx-auto px-4 py-8">
+          {/* Dashboard Title */}
+          <div className="mb-8 text-center">
+            <motion.h1
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="text-4xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent"
+            >
+              Candidate Approval Dashboard
+            </motion.h1>
+            <motion.p
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.1, duration: 0.5 }}
+              className="text-gray-400 mt-2"
+            >
+              Review and approve candidate registrations for the election
+            </motion.p>
+          </div>
+
+          {/* Stats Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <StatsCard
+              icon={<Users className="h-5 w-5 text-yellow-100" />}
+              title="Pending Approvals"
+              value={unapprovedCandidates.length}
+              color="from-yellow-600 to-amber-800"
+            />
+            <StatsCard
+              icon={<CheckCircle className="h-5 w-5 text-green-100" />}
+              title="Approved Candidates"
+              value={candidateArray.filter((c) => c[6] === 1).length}
+              color="from-green-600 to-green-800"
+            />
+            <StatsCard
+              icon={<X className="h-5 w-5 text-red-100" />}
+              title="Rejected Candidates"
+              value={candidateArray.filter((c) => c[6] === 2).length}
+              color="from-red-600 to-red-800"
+            />
+          </div>
+
+          {/* Search and Filter */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="relative overflow-hidden rounded-xl mb-6"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/30 to-purple-900/30 rounded-xl" />
+            <div className="absolute inset-0 border border-indigo-500/20 rounded-xl" />
+            <div className="relative bg-gray-900/80 backdrop-blur-sm p-6 rounded-xl border border-indigo-500/30">
+              <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+                <div className="w-full md:w-auto relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search by name, ID, or address"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full md:w-80 pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  >
+                    <option value="name">Sort by Name</option>
+                    <option value="id">Sort by ID</option>
+                    <option value="age">Sort by Age</option>
+                  </select>
+
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setActiveTab("all")}
+                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                        activeTab === "all"
+                          ? "bg-indigo-600 text-white"
+                          : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                      }`}
+                    >
+                      All Pending
+                    </button>
+                    <button
+                      onClick={() => setActiveTab("recent")}
+                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                        activeTab === "recent"
+                          ? "bg-indigo-600 text-white"
+                          : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                      }`}
+                    >
+                      Recent
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Candidates Grid */}
+          {paginatedCandidates.length === 0 ? (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="relative overflow-hidden rounded-xl"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/30 to-purple-900/30 rounded-xl" />
+              <div className="absolute inset-0 border border-indigo-500/20 rounded-xl" />
+              <div className="relative bg-gray-900/80 backdrop-blur-sm p-12 rounded-xl border border-indigo-500/30 text-center">
+                <div className="w-16 h-16 mx-auto bg-gray-800 rounded-full flex items-center justify-center mb-4">
+                  <AlertTriangle className="h-8 w-8 text-amber-400" />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">No Pending Candidates</h3>
+                <p className="text-gray-400 max-w-md mx-auto">
+                  There are currently no candidates waiting for approval. All candidates have been processed.
+                </p>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
+              {paginatedCandidates.map((candidate) => (
+                <CandidateCard
+                  key={candidate[5]}
+                  candidate={candidate}
+                  onViewDetails={setSelectedCandidate}
+                  onApprove={handleApprove}
+                  onReject={handleReject}
+                />
+              ))}
+            </motion.div>
+          )}
+
+          {/* Pagination */}
+          {pageCount > 1 && (
+            <div className="mt-8 flex justify-center">
+              {Array.from({ length: pageCount }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`mx-1 px-4 py-2 rounded-md transition-colors ${
+                    currentPage === page
+                      ? "bg-indigo-600 text-white"
+                      : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Candidate Details Modal */}
+          <AnimatePresence>
+            {selectedCandidate && (
+              <CandidateDetailsModal
+                candidate={selectedCandidate}
+                onClose={() => setSelectedCandidate(null)}
+                onApprove={handleApprove}
+                onReject={handleReject}
+                message={message}
+                setMessage={setMessage}
+              />
+            )}
+          </AnimatePresence>
+        </main>
+      </div>
+    </PageTransition>
+  )
+}
+
+export default UnapprovedCandidates

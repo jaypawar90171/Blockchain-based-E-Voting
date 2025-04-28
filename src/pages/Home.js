@@ -204,7 +204,7 @@ const CandidateCard = ({ candidate, giveVote }) => {
             </div>
           </div>
 
-          <div className="space-y-2">
+          {/* <div className="space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-gray-400">Popularity</span>
               <span className="text-gray-300">{Math.min(100, candidate[3].toNumber() * 10)}%</span>
@@ -213,7 +213,7 @@ const CandidateCard = ({ candidate, giveVote }) => {
               value={Math.min(100, candidate[3].toNumber() * 10)}
               color="bg-gradient-to-r from-indigo-500 to-purple-500"
             />
-          </div>
+          </div> */}
 
           <motion.button
             onClick={handleVoteClick}

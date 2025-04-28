@@ -391,7 +391,7 @@ export default function AllwedVoters() {
               </motion.div>
 
               {/* Recent Activity */}
-              <motion.div
+              {/* <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 1.1 }}
@@ -457,7 +457,7 @@ export default function AllwedVoters() {
                     </div>
                   )}
                 </div>
-              </motion.div>
+              </motion.div> */}
             </motion.div>
           </div>
         </div>

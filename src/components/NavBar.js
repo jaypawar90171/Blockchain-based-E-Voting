@@ -33,8 +33,8 @@ const Navbar = () => {
       title: "Election Commission",
       icon: <Settings className="w-4 h-4 mr-2" />,
       dropdown: [
-        { title: "Approve Voters", link: "/unapprovedVoters" },
-        { title: "Approve Candidates", link: "/unapprovedCandidates" },
+        { title: "Authorize Voters", link: "/unapprovedVoters" },
+        { title: "Authorize Candidates", link: "/unapprovedCandidates" },
         { title: "Set Voting Period", link: "/votingPeroid" },
         { title: "Reset Contract", link: "/reset" },
         { title: "Voter List", link: "/voterlist" },
@@ -42,7 +42,7 @@ const Navbar = () => {
     },
     {
       id: 4,
-      title: "Local",
+      title: "Result",
       icon: <Award className="w-4 h-4 mr-2" />,
       dropdown: [
         { title: "Winner", link: "/winner" },

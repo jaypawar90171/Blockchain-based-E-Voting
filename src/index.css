@@ -1,3 +1,71 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@keyframes confetti {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+.animate-confetti {
+  animation: confetti 5s ease-in-out forwards;
+}
+
+:root {
+    --navy-50: #f0f4f8;
+    --navy-100: #d9e2ec;
+    --navy-200: #bcccdc;
+    --navy-300: #9fb3c8;
+    --navy-400: #829ab1;
+    --navy-500: #627d98;
+    --navy-600: #486581;
+    --navy-700: #334e68;
+    --navy-800: #243b53;
+    --navy-900: #102a43;
+  }
+  
+  /* Dark mode styles */
+  .dark-mode {
+    --bg-primary: var(--navy-900);
+    --bg-secondary: var(--navy-800);
+    --text-primary: #ffffff;
+    --text-secondary: #d1d5db;
+  }
+  
+  /* Light mode styles */
+  .light-mode {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f3f4f6;
+    --text-primary: var(--navy-900);
+    --text-secondary: var(--navy-700);
+  }
+  
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  /* Custom scrollbar for dark theme */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-800;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-600 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-500;
+}

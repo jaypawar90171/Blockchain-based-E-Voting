@@ -42,7 +42,7 @@ const teamMembers = [
   {
     name: "Aakash Gurav",
     role: "Designer",
-    image: "../../asset/jay.jpg",
+    image: "../../asset/akash.jpg",
     bio: "Aakash crafts compelling narratives that resonate with our audience and communicate our vision.",
     social: {
       twitter: "#",

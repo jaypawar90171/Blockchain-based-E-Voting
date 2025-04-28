@@ -84,21 +84,20 @@ const Navbar = () => {
     setIsDarkMode(!isDarkMode)
   }
 
-  // Theme variables
+  // Theme variables - Updated to match hero section background
   const navbarBg = isDarkMode
-    ? "bg-gradient-to-r from-navy-900 to-navy-800"
+    ? "bg-slate-900" // Matching hero gradient
     : "bg-gradient-to-r from-blue-50 to-indigo-50"
 
   const textColor = isDarkMode ? "text-white" : "text-navy-900"
-  const logoColor = isDarkMode ? "text-indigo-300" : "text-indigo-600"
-  const dropdownBg = isDarkMode ? "bg-navy-800" : "bg-white"
-  const dropdownHoverBg = isDarkMode ? "hover:bg-navy-700" : "hover:bg-gray-100"
+  const logoColor = isDarkMode ? "text-blue-400" : "text-indigo-600" // Updated to match hero blue accent
+  const dropdownBg = isDarkMode ? "bg-gray-800" : "bg-white"
+  const dropdownHoverBg = isDarkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"
   const dropdownTextColor = isDarkMode ? "text-gray-200" : "text-gray-700"
-  const buttonHoverBg = isDarkMode ? "hover:bg-navy-700" : "hover:bg-indigo-100"
-  const mobileMenuBg = isDarkMode ? "bg-navy-800" : "bg-white"
-  const borderColor = isDarkMode ? "border-navy-700" : "border-gray-200"
-  const iconColor = isDarkMode ? "text-indigo-300" : "text-indigo-600"
-
+  const buttonHoverBg = isDarkMode ? "hover:bg-gray-700/50" : "hover:bg-indigo-100"
+  const mobileMenuBg = isDarkMode ? "bg-gray-800" : "bg-white"
+  const borderColor = isDarkMode ? "border-gray-700" : "border-gray-200"
+  const iconColor = isDarkMode ? "text-blue-400" : "text-indigo-600" // Updated to match hero blue accent
 
   return (
     <nav className={`${navbarBg} shadow-lg ${textColor} transition-colors duration-300`}>
@@ -110,7 +109,7 @@ const Navbar = () => {
               <motion.div
                 whileHover={{ rotate: 360 }}
                 transition={{ duration: 0.5 }}
-                className={`h-10 w-10 rounded-full flex items-center justify-center ${isDarkMode ? "bg-navy-700" : "bg-indigo-100"}`}
+                className={`h-10 w-10 rounded-full flex items-center justify-center ${isDarkMode ? "bg-gray-700" : "bg-indigo-100"}`}
               >
                 <Vote className={`h-6 w-6 ${logoColor}`} />
               </motion.div>
@@ -179,7 +178,7 @@ const Navbar = () => {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={toggleTheme}
-              className={`ml-4 p-2 rounded-full ${isDarkMode ? "bg-navy-700" : "bg-indigo-100"} ${iconColor} focus:outline-none`}
+              className={`ml-4 p-2 rounded-full ${isDarkMode ? "bg-gray-700" : "bg-indigo-100"} ${iconColor} focus:outline-none`}
               aria-label="Toggle theme"
             >
               {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
@@ -193,7 +192,7 @@ const Navbar = () => {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={toggleTheme}
-              className={`p-2 rounded-full ${isDarkMode ? "bg-navy-700" : "bg-indigo-100"} ${iconColor} focus:outline-none`}
+              className={`p-2 rounded-full ${isDarkMode ? "bg-gray-700" : "bg-indigo-100"} ${iconColor} focus:outline-none`}
               aria-label="Toggle theme"
             >
               {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
@@ -244,7 +243,7 @@ const Navbar = () => {
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
-                        className="ml-4 space-y-1 border-l-2 pl-2 mt-1 mb-2 border-indigo-300"
+                        className="ml-4 space-y-1 border-l-2 pl-2 mt-1 mb-2 border-blue-400" // Updated color to match hero blue accent
                       >
                         {item.dropdown.map((subItem, index) => (
                           <motion.li key={index} whileHover={{ x: 5 }} className="rounded-md">

@@ -99,6 +99,7 @@ const Navbar = () => {
   const borderColor = isDarkMode ? "border-navy-700" : "border-gray-200"
   const iconColor = isDarkMode ? "text-indigo-300" : "text-indigo-600"
 
+
   return (
     <nav className={`${navbarBg} shadow-lg ${textColor} transition-colors duration-300`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -119,7 +120,7 @@ const Navbar = () => {
                 transition={{ duration: 0.5 }}
                 className={`ml-2 text-xl font-bold ${logoColor}`}
               >
-                Decentralized Voting
+                eVoteLedger
               </motion.span>
             </Link>
           </div>

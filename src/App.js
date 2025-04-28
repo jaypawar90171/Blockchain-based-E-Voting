@@ -12,7 +12,6 @@ import PageNotFound from './pages/PageNotFound';
 import UnapprovedCandidates from './pages/UnapprovedCandidates';
 import UnapprovedVoters from './pages/UnapprovedVoters';
 import VotingPeriodSetter from './pages/VotingPeriodSetter';
-
 import Slidebar from './components/Slidebar';
 import WinningCandidate from './pages/WinningCandidate';
 import ResetVotingContract from './pages/ResetVotingContract';

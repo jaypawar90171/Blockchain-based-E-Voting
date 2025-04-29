@@ -406,7 +406,7 @@ const Home = () => {
             <StatsCard
               icon={<Users className="h-5 w-5 text-blue-100" />}
               title="Total Candidates"
-              value={candidateLength == 'NaN' ? 0 : candidateLenght}
+              value={candidateLength == 'NaN' ? 0 : candidateLength}
               color="from-blue-600 to-blue-800"
             />
             <StatsCard

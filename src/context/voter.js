@@ -93,7 +93,7 @@ export const VotingProvider = ({ children }) => {
       console.log(userRole);
 
       //Redirect
-      window.location.href = "/";
+      window.location.href = "/home";
       // navigate("/unapprovedVoters");
     } catch (error) {
       console.error("Error in creating voter:", error);

@@ -214,8 +214,8 @@ export default function AllwedVoters() {
                 delay={0.4}
               />
               <Input
-                title="Position"
-                placeholder="Voter Position"
+                title="Age"
+                placeholder="Voter Age"
                 handleClick={(e) => setFormInput({ ...formInput, position: e.target.value })}
                 delay={0.5}
               />
@@ -230,7 +230,7 @@ export default function AllwedVoters() {
                 transition={{ duration: 0.5, delay: 0.7 }}
                 onClick={() => createVoter(formInput)}
               >
-                Authorize Voter
+                Submit
               </motion.button>
             </motion.div>
 

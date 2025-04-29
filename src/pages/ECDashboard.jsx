@@ -215,7 +215,7 @@ const CandidateCard = ({ candidate, giveVote }) => {
             />
           </div> */}
 
-          <motion.button
+{/*           <motion.button
             onClick={handleVoteClick}
             className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2"
             whileTap={{ scale: 0.95 }}
@@ -223,7 +223,7 @@ const CandidateCard = ({ candidate, giveVote }) => {
           >
             <Vote className="h-5 w-5" />
             Cast Your Vote
-          </motion.button>
+          </motion.button> */}
         </div>
       </div>
     </motion.div>
@@ -456,7 +456,7 @@ const ECDashborad = () => {
                       </div>
                       <div>
                         <p className="text-sm text-gray-400">Voting Period</p>
-                        <p className="text-white font-medium">Nov 1 - Dec 31, 2023</p>
+                        <p className="text-white font-medium">Apr 29 - Apr 29, 2025</p>
                       </div>
                     </div>
 
